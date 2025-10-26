@@ -1,0 +1,667 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.2">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;CARVE-Markov Risk Valuation Engine&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body { font-family: 'Inter', sans-serif; background-color: #f7fafc; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card { background-color: white; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>input[type="text"], input[type="number"], textarea, select { border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.75rem; transition: border-color 0.15s ease-in-out; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus { border-color: #4f46e5; outline: 0; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-primary { background-color: #4f46e5; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.2s; font-weight: 600; cursor: pointer; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-primary:hover { background-color: #4338ca; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-secondary { background-color: #e5e7eb; color: #1f2937; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.2s; font-weight: 600; cursor: pointer; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-secondary:hover { background-color: #d1d5db; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.loader { border: 4px solid #f3f3f3; border-top: 4px solid #4f46e5; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin-right: 0.5rem; display: inline-block; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body class="p-4 md:p-8"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="max-w-7xl mx-auto"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;header class="mb-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h1 class="text-4xl font-bold text-gray-900"&gt;CARVE-Markov Risk Valuation Engine&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="text-lg text-gray-600"&gt;Quantifiable Financial Risk Modeling for Voluntary Carbon Offtake Agreements.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="error-message" class="hidden p-4 mb-6 text-sm text-red-800 bg-red-100 rounded-lg" role="alert"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grid grid-cols-1 lg:grid-cols-3 gap-8"&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Input Form Column --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="lg:col-span-1 card p-6 h-fit sticky top-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-2xl font-semibold mb-4 text-indigo-700"&gt;Project Input&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;form id="carve-form"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="space-y-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;label class="block"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-gray-700 font-medium"&gt;Project Name &amp; Registry ID (e.g., VCS1477)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="text" id="projectName" class="mt-1 block w-full" placeholder="Indian Biochar Project"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;label class="block"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-gray-700 font-medium"&gt;Offtake Term (Years)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="number" id="offtakeTerm" class="mt-1 block w-full" value="5" min="1" max="15"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;label class="block"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-gray-700 font-medium"&gt;Total Contract Value (USD)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="number" id="contractValue" class="mt-1 block w-full" value="2000000" min="1000"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;label class="block"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-gray-700 font-medium"&gt;Host Country of Implementation&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="text" id="hostCountry" class="mt-1 block w-full" placeholder="India"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;label class="block"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-gray-700 font-medium"&gt;Registry Quality Score (1-100) - Puro=90, Verra=80, ACR=75, GoldStandard=85&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="number" id="registryScore" class="mt-1 block w-full" value="90" min="1" max="100"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;label class="block"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-gray-700 font-medium"&gt;Country INFORM Risk Score (0-10)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="number" id="informRisk" class="mt-1 block w-full" value="5.6" min="0" max="10" step="0.1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/label&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="bg-indigo-50 p-4 rounded-lg"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;h3 class="font-semibold text-indigo-800 mb-2"&gt;Manual CARVE Execution Scores (1-100)&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;p class="text-sm text-indigo-700 mb-2"&gt;Enter 7 scores, separated by commas, in this order:&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;code class="block text-xs p-2 bg-indigo-100 rounded mb-2 font-mono"&gt;1. Financial Viability, 2. Developer Experience (Methodology), 3. Developer Experience (Country), 4. Methodology Robustness, 5. On-Time Issuance History, 6. Community/Land Tenure Risk, 7. Pre-Payment Status&lt;/code&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;textarea id="manualScores" class="mt-1 block w-full h-24 font-mono text-sm" placeholder="65, 80, 75, 95, 40, 70, 90"&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/form&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="flex flex-col space-y-3 mt-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onclick="runAnalysis()" class="btn-primary flex items-center justify-center" id="runAnalysisBtn"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;span id="analysisBtnText"&gt;Run Single CARVE-Markov Analysis&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onclick="loadSampleData()" class="btn-secondary" id="loadSampleBtn"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>Load Single Sample Project</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Results Column --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="lg:col-span-2 space-y-8"&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- Summary and Bulk Actions --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="card p-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="flex justify-between items-center mb-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h2 class="text-2xl font-semibold text-gray-900"&gt;CARVE Analysis Summary&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button onclick="runBulkAnalysis()" class="btn-secondary whitespace-nowrap" id="runBulkBtn"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>Run Bulk Analysis (10 Test Projects)</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Individual Project Results --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div id="results-summary" class="hidden bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3 class="text-xl font-bold text-gray-800 mb-3" id="resultProjectName"&gt;&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-xs font-medium text-gray-500 uppercase"&gt;CARVE Score&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-2xl font-extrabold text-indigo-600" id="resultScore"&gt;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-xs font-medium text-gray-500 uppercase"&gt;P(Collapse)&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-2xl font-extrabold text-red-600" id="resultPCollapse"&gt;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-xs font-medium text-gray-500 uppercase"&gt;VaR (USD)&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-2xl font-extrabold text-red-600" id="resultVaR"&gt;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-xs font-medium text-gray-500 uppercase"&gt;P(Underperformance/Default)&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-2xl font-extrabold text-yellow-600" id="resultPUnderperf"&gt;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button onclick="generateFullReport()" class="btn-primary w-full mt-4 flex items-center justify-center" id="generateReportBtn"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span id="reportBtnText"&gt;Generate Full Report (Powered by Gemini)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Bulk Results Table --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div id="bulk-results-container" class="hidden mt-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3 class="text-xl font-bold text-gray-800 mb-3"&gt;Bulk Analysis Results (10 Projects)&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="overflow-x-auto"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;table class="min-w-full divide-y divide-gray-200"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;thead class="bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"&gt;Project ID&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"&gt;CARVE Score&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"&gt;P(Collapse)&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"&gt;VaR (USD)&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;tbody id="bulk-results-table" class="bg-white divide-y divide-gray-200"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;!-- Results dynamically inserted here --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- Final Report Display --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="report-output-container" class="card p-6 hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 class="text-2xl font-semibold text-gray-900 mb-4"&gt;Generated Risk Report&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div id="report-output" class="prose max-w-none p-4 border rounded-lg bg-white overflow-y-auto h-[700px]"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;!-- Report content will be inserted here --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script type="module"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Global variables for Firebase access (required by the platform, but not used in this local script)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const __app_id = 'default-carve-app';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const __firebase_config = '{}';<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const __initial_auth_token = 'none';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- CORE CARVE-MARKOV ENGINE LOGIC &amp; DATA ---</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Test Project Data (10 Projects for Bulk Analysis)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const TEST_PROJECTS = [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Format: [Project Name, Term (Y), Value (USD), Country, Registry Score, INFORM Risk, [Manual Scores...]]</p>
+<p class="p1"><span class="Apple-converted-space">            </span>["Indian Biochar Project", 5, 2000000, "India", 90, 5.6, [65, 80, 75, 95, 40, 70, 90]],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>["BECCS (VCS5212)", 5, 17920128, "Denmark", 80, 2.1, [85, 90, 95, 85, 90, 85, 80]],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>["Biochar (GS12234)", 5, 14850058, "Colombia", 85, 4.3, [70, 75, 65, 90, 50, 60, 85]],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>["Biochar (VCS4001)", 10, 17092405, "Switzerland", 80, 1.4, [80, 85, 80, 90, 70, 75, 95]],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>["A/R (VCS1378)", 10, 15181287, "Colombia", 80, 4.3, [50, 60, 50, 70, 30, 40, 70]],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>["A/R (VCS4255)", 7, 17809379, "Sierra Leone", 80, 6.7, [45, 55, 40, 65, 20, 35, 60]],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>["DAC (VCS5525)", 7, 7927812, "United States", 80, 3.2, [90, 95, 90, 95, 80, 85, 100]],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>["Manure Methane (CAR1009)", 3, 11653805, "United States", 75, 3.2, [95, 90, 90, 90, 95, 85, 100]],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>["HFC Refrigerant (ACR945)", 3, 15840638, "United States", 75, 3.2, [95, 95, 95, 90, 98, 90, 100]],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>["Concrete (GS11627)", 5, 18061972, "Switzerland", 85, 1.4, [90, 90, 85, 95, 85, 80, 95]]</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Weights for the CARVE Score (sum to 1.0)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const WEIGHTS = {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>registry: 0.05, // Registry (dampened to 5%)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>informRisk: 0.15, // External (INFORM)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Execution/Methodology (80% combined)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>financialViability: 0.15,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>devExperienceMethodology: 0.10,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>devExperienceCountry: 0.05,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>methodologyRobustness: 0.15,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>onTimeIssuance: 0.15,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>communityLandTenure: 0.10,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>prePayment: 0.05,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Base Markov Chain Transition Matrix (P: Performing, U: Under-delivering, D: Default)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Values are adjusted based on the calculated CARVE Score.</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const BASE_MATRIX = {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>'P': { 'P': 0.90, 'U': 0.08, 'D': 0.02 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>'U': { 'P': 0.05, 'U': 0.85, 'D': 0.10 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>'D': { 'P': 0.00, 'U': 0.00, 'D': 1.00 }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Global storage for the last analysis data and results</p>
+<p class="p1"><span class="Apple-converted-space">        </span>window.lastAnalysisData = null;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>window.lastAnalysisResults = null;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/**</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* Validates and retrieves all data from the form.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* @returns {Object|null} The parsed data object or null if validation fails.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>*/</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function getFormData() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const data = {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>projectName: document.getElementById('projectName').value.trim(),</p>
+<p class="p1"><span class="Apple-converted-space">                </span>offtakeTerm: parseInt(document.getElementById('offtakeTerm').value),</p>
+<p class="p1"><span class="Apple-converted-space">                </span>contractValue: parseFloat(document.getElementById('contractValue').value),</p>
+<p class="p1"><span class="Apple-converted-space">                </span>hostCountry: document.getElementById('hostCountry').value.trim(),</p>
+<p class="p1"><span class="Apple-converted-space">                </span>registryScore: parseFloat(document.getElementById('registryScore').value),</p>
+<p class="p1"><span class="Apple-converted-space">                </span>informRisk: parseFloat(document.getElementById('informRisk').value),</p>
+<p class="p1"><span class="Apple-converted-space">                </span>manualScoresInput: document.getElementById('manualScores').value.trim(),</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const manualScores = data.manualScoresInput.split(',').map(s =&gt; parseFloat(s.trim())).filter(n =&gt; !isNaN(n));</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const errorDiv = document.getElementById('error-message');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>errorDiv.classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>errorDiv.innerHTML = '';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const errors = [];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!data.projectName || !data.hostCountry) { errors.push("Project Name and Host Country are required."); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isNaN(data.offtakeTerm) || data.offtakeTerm &lt; 1) { errors.push("Offtake Term must be a positive number."); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isNaN(data.contractValue) || data.contractValue &lt; 1000) { errors.push("Contract Value must be at least $1,000."); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isNaN(data.registryScore) || data.registryScore &lt; 1 || data.registryScore &gt; 100) { errors.push("Registry Score must be between 1 and 100."); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isNaN(data.informRisk) || data.informRisk &lt; 0 || data.informRisk &gt; 10) { errors.push("INFORM Risk Score must be between 0 and 10."); }</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (manualScores.length !== 7) { errors.push(`Manual Scores require exactly 7 comma-separated values. ${manualScores.length} found.`); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>else if (manualScores.some(s =&gt; s &lt; 1 || s &gt; 100)) { errors.push("All 7 manual scores must be between 1 and 100."); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (errors.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>errorDiv.innerHTML = `&lt;strong&gt;Input Error:&lt;/strong&gt;&lt;ul&gt;${errors.map(e =&gt; `&lt;li&gt;- ${e}&lt;/li&gt;`).join('')}&lt;/ul&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>errorDiv.classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>return null;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Map manual scores to weighted factors</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const [</p>
+<p class="p1"><span class="Apple-converted-space">                </span>financialViability,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>devExperienceMethodology,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>devExperienceCountry,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>methodologyRobustness,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>onTimeIssuance,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>communityLandTenure,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>prePayment</p>
+<p class="p1"><span class="Apple-converted-space">            </span>] = manualScores;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>return {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>...data,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>scores: {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>financialViability,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>devExperienceMethodology,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>devExperienceCountry,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>methodologyRobustness,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>onTimeIssuance,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>communityLandTenure,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>prePayment,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Calculated scores based on inputs</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>registry: data.registryScore,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>informRisk: 100 - (data.informRisk * 10), // Convert 0-10 INFORM to 0-100 risk score</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/**</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* Calculates the weighted CARVE Score.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* @param {Object} scores - The individual risk scores (0-100).</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* @returns {number} The final CARVE Score (0-100, where 100 is best).</p>
+<p class="p1"><span class="Apple-converted-space">         </span>*/</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function calculateCarveScore(scores) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let totalWeightedScore = 0;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Execution/Methodology Scores (Higher is better, 100=no risk)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>totalWeightedScore += scores.financialViability * WEIGHTS.financialViability;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>totalWeightedScore += scores.devExperienceMethodology * WEIGHTS.devExperienceMethodology;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>totalWeightedScore += scores.devExperienceCountry * WEIGHTS.devExperienceCountry;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>totalWeightedScore += scores.methodologyRobustness * WEIGHTS.methodologyRobustness;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>totalWeightedScore += scores.onTimeIssuance * WEIGHTS.onTimeIssuance;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>totalWeightedScore += scores.communityLandTenure * WEIGHTS.communityLandTenure;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>totalWeightedScore += scores.prePayment * WEIGHTS.prePayment;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Systemic Scores (Higher is better)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>totalWeightedScore += scores.registry * WEIGHTS.registry;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// External Risk (Lower INFORM is better, so we convert informRisk to a score where higher is better)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// informRisk is already converted: 100 - (informRisk * 10)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>totalWeightedScore += scores.informRisk * WEIGHTS.informRisk;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>return Math.min(100, Math.max(0, totalWeightedScore));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/**</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* Calculates the Markov Chain transition matrix based on the CARVE Score.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* @param {number} carveScore - The calculated CARVE Score (0-100).</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* @returns {Object} The adjusted transition matrix.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>*/</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function calculateTransitionMatrix(carveScore) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Factor is based on the deviation from a neutral score (e.g., 70)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const neutralScore = 70;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const adjustmentFactor = (carveScore - neutralScore) / 100;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Base transition matrix for a neutral score (CARVE Score = 70)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const matrix = JSON.parse(JSON.stringify(BASE_MATRIX));</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Adjustments: A higher CARVE Score should INCREASE P-&gt;P and DECREASE P-&gt;U/D and U-&gt;D.</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const P_P_ADJ = adjustmentFactor * 0.15; // Max 15% swing on P-&gt;P</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const P_U_ADJ = -adjustmentFactor * 0.08; // Max 8% swing on P-&gt;U</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const P_D_ADJ = -adjustmentFactor * 0.07; // Max 7% swing on P-&gt;D</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const U_D_ADJ = -adjustmentFactor * 0.05; // Max 5% swing on U-&gt;D</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Apply adjustments to P row</p>
+<p class="p1"><span class="Apple-converted-space">            </span>matrix.P.P = Math.min(1.0, Math.max(0.70, matrix.P.P + P_P_ADJ));</p>
+<p class="p1"><span class="Apple-converted-space">            </span>matrix.P.U = Math.min(0.30, Math.max(0, matrix.P.U + P_U_ADJ));</p>
+<p class="p1"><span class="Apple-converted-space">            </span>matrix.P.D = Math.min(0.30, Math.max(0, matrix.P.D + P_D_ADJ));</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Re-normalize P row to ensure P+U+D = 1</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const pSum = matrix.P.P + matrix.P.U + matrix.P.D;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (pSum !== 1.0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const diff = 1.0 - pSum;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>matrix.P.P += diff * 0.5;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>matrix.P.U += diff * 0.3;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>matrix.P.D += diff * 0.2;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Apply adjustments to U row</p>
+<p class="p1"><span class="Apple-converted-space">            </span>matrix.U.D = Math.min(1.0, Math.max(0, matrix.U.D + U_D_ADJ));</p>
+<p class="p1"><span class="Apple-converted-space">            </span>matrix.U.P = matrix.U.P - U_D_ADJ * 0.5; // Re-allocate from D to P for better projects</p>
+<p class="p1"><span class="Apple-converted-space">            </span>matrix.U.U = 1.0 - matrix.U.P - matrix.U.D; // Ensure U+P+D = 1</p>
+<p class="p1"><span class="Apple-converted-space">            </span>matrix.U.U = Math.max(0, matrix.U.U);</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Ensure D row remains stable (absorbing state)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>matrix.D = { 'P': 0.00, 'U': 0.00, 'D': 1.00 };</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>return matrix;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/**</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* Executes the Markov Chain simulation over the given term.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* @param {Object} matrix - The transition matrix.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* @param {number} term - The number of years.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* @returns {Object} The final state probabilities (P, U, D).</p>
+<p class="p1"><span class="Apple-converted-space">         </span>*/</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function runMarkovChain(matrix, term) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let state = { P: 1.0, U: 0.0, D: 0.0 }; // Start 100% in Performing</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>for (let year = 1; year &lt;= term; year++) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const nextState = { P: 0, U: 0, D: 0 };</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// P -&gt; P, U, D</p>
+<p class="p1"><span class="Apple-converted-space">                </span>nextState.P += state.P * matrix.P.P;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>nextState.U += state.P * matrix.P.U;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>nextState.D += state.P * matrix.P.D;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// U -&gt; P, U, D</p>
+<p class="p1"><span class="Apple-converted-space">                </span>nextState.P += state.U * matrix.U.P;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>nextState.U += state.U * matrix.U.U;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>nextState.D += state.U * matrix.U.D;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// D -&gt; P, U, D (D is absorbing, so D-&gt;D is 1.0)</p>
+<p class="p1"><span class="Apple-converted-space">                </span>nextState.D += state.D * matrix.D.D;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>state = nextState;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>return state;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/**</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* Main function to run the CARVE analysis for a single project.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* @param {Object} inputData - Data object containing all project inputs.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* @returns {Object} Final results including score, probabilities, and VaR.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>*/</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function runCarveAnalysis(inputData) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const carveScore = calculateCarveScore(inputData.scores);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const transitionMatrix = calculateTransitionMatrix(carveScore);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const finalState = runMarkovChain(transitionMatrix, inputData.offtakeTerm);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const probCollapse = finalState.D;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const probUnderperformance = finalState.U;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const probOfftakeFailure = probCollapse + probUnderperformance; // U + D</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// VaR is calculated as: Contract Value * Probability of Total Collapse</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const valueAtRisk = inputData.contractValue * probCollapse;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>return {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>carveScore: carveScore,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>probCollapse: probCollapse,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>probUnderperformance: probUnderperformance,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>probOfftakeFailure: probOfftakeFailure,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>valueAtRisk: valueAtRisk,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>transitionMatrix: transitionMatrix,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>inputData: inputData</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/**</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* Runs the analysis based on current form data and displays results.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>*/</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function runAnalysis() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const btn = document.getElementById('runAnalysisBtn');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const originalText = 'Run Single CARVE-Markov Analysis';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>btn.disabled = true;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>btn.innerHTML = `&lt;div class="loader"&gt;&lt;/div&gt; Calculating...`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const inputData = getFormData();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (!inputData) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>btn.disabled = false;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>btn.innerHTML = originalText;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const results = runCarveAnalysis(inputData);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>window.lastAnalysisData = inputData;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>window.lastAnalysisResults = results;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>displaySingleResults(inputData, results);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>} catch (error) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>console.error("Analysis Error:", error);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('error-message').innerHTML = `&lt;strong&gt;System Error:&lt;/strong&gt; An unexpected error occurred during calculation.`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('error-message').classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} finally {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>btn.disabled = false;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>btn.innerHTML = originalText;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/**</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* Displays the results of a single analysis.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>*/</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function displaySingleResults(inputData, results) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('results-summary').classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('bulk-results-container').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('report-output-container').classList.add('hidden');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('resultProjectName').textContent = inputData.projectName;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('resultScore').textContent = results.carveScore.toFixed(1) + '/100';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('resultPCollapse').textContent = (results.probCollapse * 100).toFixed(2) + '%';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('resultVaR').textContent = '$' + results.valueAtRisk.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('resultPUnderperf').textContent = (results.probOfftakeFailure * 100).toFixed(2) + '%';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/**</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* Loads a single sample project's data into the form.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>*/</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function loadSampleData() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const project = TEST_PROJECTS[0]; // Load Indian Biochar Project by default</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('projectName').value = project[0];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('offtakeTerm').value = project[1];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('contractValue').value = project[2];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('hostCountry').value = project[3];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('registryScore').value = project[4];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('informRisk').value = project[5];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('manualScores').value = project[6].join(', ');</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('results-summary').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('bulk-results-container').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('report-output-container').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('error-message').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>console.log(`Loaded sample project: ${project[0]}`);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/**</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* Runs the CARVE analysis on all 10 test projects and displays a summary table.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>*/</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function runBulkAnalysis() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const tableBody = document.getElementById('bulk-results-table');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>tableBody.innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('results-summary').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('report-output-container').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('bulk-results-container').classList.remove('hidden');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>TEST_PROJECTS.forEach(p =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const [projectName, term, value, country, registry, inform, manualScores] = p;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Reconstruct input data for the engine</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const inputData = {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>projectName,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>offtakeTerm: term,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>contractValue: value,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>hostCountry: country,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>scores: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>financialViability: manualScores[0],</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>devExperienceMethodology: manualScores[1],</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>devExperienceCountry: manualScores[2],</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>methodologyRobustness: manualScores[3],</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>onTimeIssuance: manualScores[4],</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>communityLandTenure: manualScores[5],</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>prePayment: manualScores[6],</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>registry: registry,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>informRisk: 100 - (inform * 10),</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const results = runCarveAnalysis(inputData);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const row = tableBody.insertRow();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>row.className = 'hover:bg-gray-50';</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const idCell = row.insertCell();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>idCell.textContent = projectName;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>idCell.className = 'px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const scoreCell = row.insertCell();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>scoreCell.textContent = results.carveScore.toFixed(1);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>scoreCell.className = 'px-3 py-3 whitespace-nowrap text-sm text-gray-500';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const collapseCell = row.insertCell();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>collapseCell.textContent = (results.probCollapse * 100).toFixed(2) + '%';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>collapseCell.className = `px-3 py-3 whitespace-nowrap text-sm ${results.probCollapse &gt; 0.1 ? 'text-red-600 font-semibold' : 'text-green-600'}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const varCell = row.insertCell();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>varCell.textContent = '$' + results.valueAtRisk.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>varCell.className = 'px-3 py-3 whitespace-nowrap text-sm text-gray-500';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- LLM API INTEGRATION FOR REPORT GENERATION ---</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Exponential backoff utility for retries</p>
+<p class="p1"><span class="Apple-converted-space">        </span>async function fetchWithRetry(url, options, maxRetries = 5) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; maxRetries; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const response = await fetch(url, options);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (response.ok) return response;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (response.status === 429 &amp;&amp; i &lt; maxRetries - 1) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>await new Promise(resolve =&gt; setTimeout(resolve, delay));</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const error = await response.json();</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>throw new Error(`API failed with status ${response.status}: ${JSON.stringify(error)}`);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} catch (error) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (i === maxRetries - 1) throw error;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Will retry if fetch failed (network error)</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/**</p>
+<p class="p1"><span class="Apple-converted-space">         </span>* Generates the final, narrative report using the LLM API.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>*/</p>
+<p class="p1"><span class="Apple-converted-space">        </span>async function generateFullReport() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!window.lastAnalysisResults) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>alert("Please run the CARVE-Markov Analysis first.");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const btn = document.getElementById('generateReportBtn');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const originalText = 'Generate Full Report (Powered by Gemini)';</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>btn.disabled = true;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>btn.innerHTML = `&lt;div class="loader"&gt;&lt;/div&gt; Generating Report...`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('report-output-container').classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('report-output').innerHTML = '&lt;p class="text-center text-gray-500 mt-10"&gt;...Connecting to Gemini API and drafting final report. This may take a moment...&lt;/p&gt;';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const data = window.lastAnalysisData;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const results = window.lastAnalysisResults;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Prepare detailed input data for the LLM</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const inputDetails = `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>--- PROJECT DETAILS ---</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Project Name: ${data.projectName}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Offtake Term: ${data.offtakeTerm} Years</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Contract Value (USD): ${data.contractValue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Host Country: ${data.hostCountry}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>--- CARVE INPUT SCORES (1-100, Higher is better) ---</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Registry Quality: ${data.scores.registry.toFixed(0)}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>External/INFORM Risk: ${data.scores.informRisk.toFixed(0)} (Derived from raw score of ${data.informRisk})</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Financial Viability: ${data.scores.financialViability.toFixed(0)}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Developer Experience (Methodology): ${data.scores.devExperienceMethodology.toFixed(0)}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Developer Experience (Country): ${data.scores.devExperienceCountry.toFixed(0)}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Methodology Robustness: ${data.scores.methodologyRobustness.toFixed(0)}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>On-Time Issuance History: ${data.scores.onTimeIssuance.toFixed(0)}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Community/Land Tenure Risk: ${data.scores.communityLandTenure.toFixed(0)}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Pre-Payment Status: ${data.scores.prePayment.toFixed(0)}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>--- MARKOV CHAIN OUTPUT RESULTS ---</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Final CARVE Score: ${results.carveScore.toFixed(1)}/100</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Probability of Total Collapse (P(D)): ${(results.probCollapse * 100).toFixed(2)}%</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Cumulative Value at Risk (VaR): $${results.valueAtRisk.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Probability of Offtake Underperformance (P(U) + P(D)): ${(results.probOfftakeFailure * 100).toFixed(2)}%</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Final P(P): ${(results.transitionMatrix.P.P * 100).toFixed(2)}%</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Final P(U): ${(results.transitionMatrix.P.U * 100).toFixed(2)}%</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Final P(D): ${(results.transitionMatrix.P.D * 100).toFixed(2)}%</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const systemPrompt = `You are the Chief Climate Scientist and Risk Analyst for the CARVE (Carbon Risk Valuation Engine).</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Your task is to transform the provided raw numerical inputs and Markov Chain results into a professional, narrative Risk Assessment Report.</p>
+<p class="p1"><span class="Apple-converted-space">                </span>The report MUST be delivered entirely in a single Markdown block. Do not use any external formatting (like bolding outside of markdown).</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>The report MUST follow this exact structure, using the project name and data provided:</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span># CARVE Portfolio Risk Assessment: [Project Name]</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>---</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>## 1. Executive Summary &amp; Key Findings</p>
+<p class="p1"><span class="Apple-converted-space">                </span>* Start with a 'Bottom Line Up Front' (BLUF) statement summarizing the overall risk profile (e.g., 'Low Risk,' 'Moderate Risk,' 'High Risk').</p>
+<p class="p1"><span class="Apple-converted-space">                </span>* State the calculated Final CARVE Score (out of 100) and the two key financial metrics: Probability of Total Collapse and Cumulative Value at Risk (VaR).</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>## 2. Methodology &amp; Quantitative Metrics</p>
+<p class="p1"><span class="Apple-converted-space">                </span>* Briefly explain that the CARVE Engine quantifies risk across Financial, Technical/Execution, and External factors and uses a probabilistic Markov Chain model to forecast failure over the contract term.</p>
+<p class="p1"><span class="Apple-converted-space">                </span>* Present the three core metrics clearly in a bulleted list.</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>## 3. Key Risk Drivers (Qualitative Analysis)</p>
+<p class="p1"><span class="Apple-converted-space">                </span>* Analyze the input scores to identify the 3 strongest risk drivers (highest scores) and the 3 weakest risk drivers (lowest scores).</p>
+<p class="p1"><span class="Apple-converted-space">                </span>* For each driver, provide a brief, professional interpretation (e.g., "High score in Methodology Robustness indicates strong permanence.").</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>## 4. Confidence and Comparative Assessment</p>
+<p class="p1"><span class="Apple-converted-space">                </span>* Provide a standard **85% Confidence Score** in the model's accuracy, stating that the model's primary value is in comparing projects across a portfolio.</p>
+<p class="p1"><span class="Apple-converted-space">                </span>* Include the standard statement: "This project is currently expected to perform within the upper-middle quartile of similar projects globally, provided the core risk drivers identified remain stable."</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>## 5. Standard Terms and Conditions</p>
+<p class="p1"><span class="Apple-converted-space">                </span>* The report MUST end with the full text of the following legal disclaimer, preceded by a horizontal rule:</p>
+<p class="p1"><span class="Apple-converted-space">                </span>---</p>
+<p class="p1"><span class="Apple-converted-space">                </span>**Standard Terms and Conditions**</p>
+<p class="p1"><span class="Apple-converted-space">                </span>This CARVE Portfolio Risk Assessment is provided for informational and internal comparative purposes only. It is the result of a proprietary Markov Chain forecasting model and does not constitute investment advice, legal counsel, or a guarantee of future project performance. The model relies on internal scoring inputs which are estimations based on publicly available data, proprietary research, and professional judgment. Climate Risk Analysis makes no representations or warranties, express or implied, regarding the accuracy, completeness, or reliability of the information contained herein. The recipient assumes sole responsibility for all decisions and outcomes based on the use of this report. Climate Risk Analysis shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or interpretation of this assessment.</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const userQuery = `Generate the full risk assessment report using the following raw data. Ensure all numerical results are smoothly integrated into the narrative and that the final output is a single, complete Markdown block. \n\n${inputDetails}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const apiKey = "";<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const payload = {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>contents: [{ parts: [{ text: userQuery }] }],</p>
+<p class="p1"><span class="Apple-converted-space">                </span>systemInstruction: { parts: [{ text: systemPrompt }] },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const response = await fetchWithRetry(apiUrl, {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>method: 'POST',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>headers: { 'Content-Type': 'application/json' },</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>body: JSON.stringify(payload)</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const result = await response.json();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Error: Could not generate report content.";</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('report-output').innerHTML = text;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Generate a separate file on the canvas for the user</p>
+<p class="p1"><span class="Apple-converted-space">                </span>console.log(`Report generation successful for ${data.projectName}. Report text is available below in the Markdown file block.`);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// The environment automatically handles file generation based on the string:</p>
+<p class="p1"><span class="Apple-converted-space">                </span>//<span class="Apple-converted-space"> </span></p>
+</body>
+</html>
