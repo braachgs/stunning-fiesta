@@ -3,680 +3,659 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CARVE-Markov Risk Valuation Engine</title>
+    <title>CARVE-Markov Risk Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; }
-        .card { background-color: white; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
-        input[type="text"], input[type="number"], textarea, select { border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.75rem; transition: border-color 0.15s ease-in-out; }
-        input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus { border-color: #4f46e5; outline: 0; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25); }
-        .btn-primary { background-color: #4f46e5; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.2s; font-weight: 600; cursor: pointer; }
-        .btn-primary:hover { background-color: #4338ca; }
-        .btn-secondary { background-color: #e5e7eb; color: #1f2937; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.2s; font-weight: 600; cursor: pointer; }
-        .btn-secondary:hover { background-color: #d1d5db; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4f46e5; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin-right: 0.5rem; display: inline-block; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .card { background-color: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); padding: 24px; }
+        .input-group label { font-weight: 600; color: #333; }
+        .input-manual { background-color: #fff; border: 2px solid #3b82f6; } /* Expert Input */
+        .input-automated { background-color: #f0f4f8; border: 1px solid #cbd5e1; color: #4a5568; } /* CDOP/Automated */
+        .input-manual:focus { border-color: #2563eb; ring-color: #bfdbfe; }
+        .btn-primary { background-color: #10b981; color: white; transition: background-color 0.2s; }
+        .btn-primary:hover { background-color: #059669; }
+        .btn-secondary { background-color: #3b82f6; color: white; transition: background-color 0.2s; }
+        .btn-secondary:hover { background-color: #2563eb; }
+        .result-box { background-color: #ecfdf5; border-left: 5px solid #10b981; padding: 16px; border-radius: 8px; margin-top: 20px; }
+        .result-box p { margin: 0; }
+        .result-value { font-weight: 700; color: #065f46; font-size: 1.125rem; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-8 min-h-screen">
 
-    <div class="max-w-7xl mx-auto">
-        <header class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900">CARVE-Markov Risk Valuation Engine</h1>
-            <p class="text-lg text-gray-600">Quantifiable Financial Risk Modeling for Voluntary Carbon Offtake Agreements.</p>
+    <div class="max-w-6xl mx-auto">
+        
+        <header class="mb-6 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-gray-800">CARVE-Markov Engine</h1>
+            <button id="helpButton" class="text-sm font-semibold text-gray-600 hover:text-gray-800 py-1 px-3 border border-gray-300 rounded-full transition duration-150">
+                View Help & Data Guide
+            </button>
         </header>
 
-        <div id="error-message" class="hidden p-4 mb-6 text-sm text-red-800 bg-red-100 rounded-lg" role="alert"></div>
+        <!-- Help Documentation Modal -->
+        <div id="helpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+            <div class="card max-w-2xl w-full">
+                <h2 class="text-2xl font-bold mb-4 border-b pb-2">CARVE Gem Documentation & Data Guide</h2>
+                <p class="text-sm mb-4 text-gray-700">This guide explains the **Hybrid Scoring Model** and provides IDs for testing the automated data pipeline.</p>
+                
+                <h3 class="font-semibold text-lg mb-2">Hybrid Input Model</h3>
+                <p class="text-xs mb-4">The CARVE Engine combines **Automated CDOP/INFORM Data** (gray fields) with your **Manual Expert Scores** (white fields) for a single, auditable risk score. The final report includes an Audit Annex detailing the source of every score.</p>
+                
+                <h3 class="font-semibold text-lg mb-2">Simulated CDOP Projects (Use these IDs for lookup)</h3>
+                <div class="overflow-x-auto mb-6">
+                    <table class="min-w-full text-sm text-gray-600 bg-gray-50 rounded-lg">
+                        <thead>
+                            <tr class="text-left text-gray-800 border-b">
+                                <th class="p-2 font-bold">Project ID</th>
+                                <th class="p-2 font-bold">Project Type</th>
+                                <th class="p-2 font-bold">Host Country</th>
+                                <th class="p-2 font-bold">Risk Profile</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="p-2">001-AFOLU-US</td><td class="p-2">AFOLU</td><td class="p-2">United States</td><td class="p-2">Low Risk</td></tr>
+                            <tr><td class="p-2">002-ENGINEERED-CH</td><td class="p-2">Engineered</td><td class="p-2">Switzerland</td><td class="p-2">Very Low Risk</td></tr>
+                            <tr><td class="p-2">003-AFOLU-CO</td><td class="p-2">AFOLU</td><td class="p-2">Colombia</td><td class="p-2">Medium Risk</td></tr>
+                            <tr><td class="p-2">004-AFOLU-SL</td><td class="p-2">AFOLU</td><td class="p-2">Sierra Leone</td><td class="p-2">High Risk</td></tr>
+                            <tr><td class="p-2">005-BLUECARBON-ID</td><td class="p-2">Blue Carbon</td><td class="p-2">Indonesia</td><td class="p-2">High Risk</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-end">
+                    <button id="closeHelpButton" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Close</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="error-message" class="hidden p-4 mb-4 text-sm text-red-800 bg-red-100 rounded-lg" role="alert"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <!-- Input Form Column -->
-            <div class="lg:col-span-1 card p-6 h-fit sticky top-4">
-                <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Project Input</h2>
-                <form id="carve-form">
-                    <div class="space-y-4">
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">Project Name & Registry ID (e.g., VCS1477)</span>
-                            <input type="text" id="projectName" class="mt-1 block w-full" placeholder="Indian Biochar Project">
-                        </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">Offtake Term (Years)</span>
-                            <input type="number" id="offtakeTerm" class="mt-1 block w-full" value="5" min="1" max="15">
-                        </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">Total Contract Value (USD)</span>
-                            <input type="number" id="contractValue" class="mt-1 block w-full" value="2000000" min="1000">
-                        </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">Host Country of Implementation</span>
-                            <input type="text" id="hostCountry" class="mt-1 block w-full" placeholder="India">
-                        </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">Registry Quality Score (1-100) - Puro=90, Verra=80, ACR=75, GoldStandard=85</span>
-                            <input type="number" id="registryScore" class="mt-1 block w-full" value="90" min="1" max="100">
-                        </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">Country INFORM Risk Score (0-10)</span>
-                            <input type="number" id="informRisk" class="mt-1 block w-full" value="5.6" min="0" max="10" step="0.1">
-                        </label>
-                        
-                        <div class="bg-indigo-50 p-4 rounded-lg">
-                            <h3 class="font-semibold text-indigo-800 mb-2">Manual CARVE Execution Scores (1-100)</h3>
-                            <p class="text-sm text-indigo-700 mb-2">Enter 7 scores, separated by commas, in this order:</p>
-                            <code class="block text-xs p-2 bg-indigo-100 rounded mb-2 font-mono">1. Financial Viability, 2. Developer Experience (Methodology), 3. Developer Experience (Country), 4. Methodology Robustness, 5. On-Time Issuance History, 6. Community/Land Tenure Risk, 7. Pre-Payment Status</code>
-                            <textarea id="manualScores" class="mt-1 block w-full h-24 font-mono text-sm" placeholder="65, 80, 75, 95, 40, 70, 90"></textarea>
+            <!-- Input Form - Left Column (lg:col-span-2) -->
+            <div class="lg:col-span-2 card">
+                <h2 class="text-2xl font-bold mb-6 border-b pb-2">Offtake Agreement Inputs</h2>
+                
+                <form id="carveForm">
+                    <!-- Automated Data Simulation -->
+                    <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <label class="block mb-2 text-sm font-bold text-blue-700">AUTOMATED DATA IMPORT (CDOP Simulation)</label>
+                        <p class="text-xs text-blue-600 mb-3">Enter a simulated Project ID (e.g., 001-AFOLU-US) to pull automated Registry and INFORM risk scores.</p>
+                        <input type="text" id="cdop_project_id" value="001-AFOLU-US" placeholder="e.g., 001-AFOLU-US" class="input-automated w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <!-- Financial Inputs -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="input-group">
+                            <label for="project_name" class="block text-sm">Project Name / ID</label>
+                            <input type="text" id="project_name" value="AFOLU US Sample" class="input-automated w-full p-2 border rounded-lg" readonly>
                         </div>
+                         <div class="input-group">
+                            <label for="offtake_term" class="block text-sm">Offtake Term (Years)</label>
+                            <input type="number" id="offtake_term" value="5" class="input-manual w-full p-2 border rounded-lg" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="contract_value" class="block text-sm">Total Contract Value (USD)</label>
+                            <input type="number" id="contract_value" value="2000000" class="input-manual w-full p-2 border rounded-lg" required>
+                        </div>
+                    </div>
+
+                    <!-- Host Country and Registry (Automated Display) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="input-group">
+                            <label for="host_country" class="block text-sm">Host Country (CDOP)</label>
+                            <input type="text" id="host_country" value="United States" class="input-automated w-full p-2 border rounded-lg" readonly>
+                        </div>
+                         <div class="input-group">
+                            <label for="registry_score" class="block text-sm">Registry Score (CDOP) - Scale: 1-100</label>
+                            <input type="number" id="registry_score" value="90" class="input-automated w-full p-2 border rounded-lg" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Manual CARVE Scores Input (Expert Judgment) -->
+                    <div class="input-group mb-6">
+                        <label for="manual_scores" class="block text-sm">MANUAL CARVE SCORE INPUT (7 Scores, Comma-Separated)</label>
+                        <p class="text-xs text-gray-500 mb-2">Input 7 scores (1-100) in this exact order: Financial Viability, Legal Structure, Community Risk, Methodology Robustness, On-Time Issuance History, Developer Experience, Pre-Payment Risk.</p>
+                        <textarea id="manual_scores" rows="3" class="input-manual w-full p-2 border rounded-lg" placeholder="e.g., 65, 80, 75, 95, 40, 70, 90">65, 80, 75, 95, 40, 70, 90</textarea>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <button type="submit" id="runAnalysisButton" class="btn-primary flex-grow px-6 py-3 rounded-lg text-lg font-semibold hover:shadow-lg">
+                            Run Single CARVE-Markov Analysis
+                        </button>
+                        <button type="button" id="loadSampleButton" class="btn-secondary px-6 py-3 rounded-lg font-semibold">
+                            Load Single Sample Project
+                        </button>
                     </div>
                 </form>
 
-                <div class="flex flex-col space-y-3 mt-6">
-                    <button onclick="runAnalysis()" class="btn-primary flex items-center justify-center" id="runAnalysisBtn">
-                        <span id="analysisBtnText">Run Single CARVE-Markov Analysis</span>
-                    </button>
-                    <button onclick="loadSampleData()" class="btn-secondary" id="loadSampleBtn">
-                        Load Single Sample Project
-                    </button>
-                </div>
             </div>
 
-            <!-- Results Column -->
-            <div class="lg:col-span-2 space-y-8">
+            <!-- Results & Demo - Right Column -->
+            <div class="card lg:col-span-1">
+                <h2 class="text-2xl font-bold mb-6 border-b pb-2">Results & Portfolio Demo</h2>
+
+                <div id="results-display" class="hidden">
+                    <div class="result-box">
+                        <p class="text-sm font-semibold text-gray-700">Calculated CARVE Risk Score</p>
+                        <p class="result-value" id="final-score">--</p>
+                    </div>
+                    <div class="result-box mt-4">
+                        <p class="text-sm font-semibold text-gray-700">Cumulative Value at Risk (VaR)</p>
+                        <p class="result-value" id="final-var">--</p>
+                    </div>
+                    <div class="result-box mt-4">
+                        <p class="text-sm font-semibold text-gray-700">Probability of Total Collapse (Default)</p>
+                        <p class="result-value" id="final-collapse">--</p>
+                    </div>
+
+                    <button type="button" id="generateReportButton" class="mt-6 w-full px-6 py-3 rounded-lg text-lg font-semibold bg-gray-700 text-white hover:bg-gray-800 transition duration-150">
+                        Generate Full Auditable Report
+                    </button>
+                </div>
                 
-                <!-- Summary and Bulk Actions -->
-                <div class="card p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-semibold text-gray-900">CARVE Analysis Summary</h2>
-                        <button onclick="runBulkAnalysis()" class="btn-secondary whitespace-nowrap" id="runBulkBtn">
-                            Run Bulk Analysis (10 Test Projects)
-                        </button>
-                    </div>
-
-                    <!-- Individual Project Results -->
-                    <div id="results-summary" class="hidden bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
-                        <h3 class="text-xl font-bold text-gray-800 mb-3" id="resultProjectName"></h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase">CARVE Score</p>
-                                <p class="text-2xl font-extrabold text-indigo-600" id="resultScore"></p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase">P(Collapse)</p>
-                                <p class="text-2xl font-extrabold text-red-600" id="resultPCollapse"></p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase">VaR (USD)</p>
-                                <p class="text-2xl font-extrabold text-red-600" id="resultVaR"></p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase">P(Underperformance/Default)</p>
-                                <p class="text-2xl font-extrabold text-yellow-600" id="resultPUnderperf"></p>
-                            </div>
-                        </div>
-                        <button onclick="generateFullReport()" class="btn-primary w-full mt-4 flex items-center justify-center" id="generateReportBtn">
-                            <span id="reportBtnText">Generate Full Report (Powered by Gemini)</span>
-                        </button>
-                    </div>
-                    
-                    <!-- Bulk Results Table -->
-                    <div id="bulk-results-container" class="hidden mt-4">
-                        <h3 class="text-xl font-bold text-gray-800 mb-3">Bulk Analysis Results (10 Projects)</h3>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project ID</th>
-                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CARVE Score</th>
-                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">P(Collapse)</th>
-                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VaR (USD)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="bulk-results-table" class="bg-white divide-y divide-gray-200">
-                                    <!-- Results dynamically inserted here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <p id="initial-message" class="text-gray-500 italic mb-4">Run an analysis above or use the portfolio demo below.</p>
+                
+                <button type="button" id="runBulkButton" class="w-full px-6 py-3 rounded-lg text-lg font-semibold bg-gray-500 text-white hover:bg-gray-600 transition duration-150 mt-4">
+                    Run Bulk Analysis (5 Simulated CDOP Projects)
+                </button>
+                
+                <div id="bulk-results" class="mt-6 text-sm">
+                    <p class="font-semibold mb-2">Portfolio Cross-Validation Summary:</p>
+                    <!-- Bulk results table will be injected here -->
                 </div>
-
-                <!-- Final Report Display -->
-                <div id="report-output-container" class="card p-6 hidden">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">Generated Risk Report</h2>
-                    <div id="report-output" class="prose max-w-none p-4 border rounded-lg bg-white overflow-y-auto h-[700px]">
-                        <!-- Report content will be inserted here -->
-                    </div>
-                </div>
-
             </div>
         </div>
+
+        <!-- Report Output Section -->
+        <div class="mt-8 card hidden" id="report-output-section">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2">Generated Report Output (Markdown)</h2>
+            <div id="report-output" class="p-4 bg-gray-100 rounded-lg whitespace-pre-wrap text-sm" style="max-height: 600px; overflow-y: auto;">
+                <!-- LLM Report will be injected here -->
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
-        // Global variables for Firebase access (required by the platform, but not used in this local script)
-        const __app_id = 'default-carve-app';
-        const __firebase_config = '{}'; 
-        const __initial_auth_token = 'none';
+        // --- 1. CONFIGURATION AND UTILITIES ---
 
-        // --- CORE CARVE-MARKOV ENGINE LOGIC & DATA ---
-
-        // Test Project Data (10 Projects for Bulk Analysis)
+        const LLM_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=";
         const TEST_PROJECTS = [
-            // Format: [Project Name, Term (Y), Value (USD), Country, Registry Score, INFORM Risk, [Manual Scores...]]
-            ["Indian Biochar Project", 5, 2000000, "India", 90, 5.6, [65, 80, 75, 95, 40, 70, 90]],
-            ["BECCS (VCS5212)", 5, 17920128, "Denmark", 80, 2.1, [85, 90, 95, 85, 90, 85, 80]],
-            ["Biochar (GS12234)", 5, 14850058, "Colombia", 85, 4.3, [70, 75, 65, 90, 50, 60, 85]],
-            ["Biochar (VCS4001)", 10, 17092405, "Switzerland", 80, 1.4, [80, 85, 80, 90, 70, 75, 95]],
-            ["A/R (VCS1378)", 10, 15181287, "Colombia", 80, 4.3, [50, 60, 50, 70, 30, 40, 70]],
-            ["A/R (VCS4255)", 7, 17809379, "Sierra Leone", 80, 6.7, [45, 55, 40, 65, 20, 35, 60]],
-            ["DAC (VCS5525)", 7, 7927812, "United States", 80, 3.2, [90, 95, 90, 95, 80, 85, 100]],
-            ["Manure Methane (CAR1009)", 3, 11653805, "United States", 75, 3.2, [95, 90, 90, 90, 95, 85, 100]],
-            ["HFC Refrigerant (ACR945)", 3, 15840638, "United States", 75, 3.2, [95, 95, 95, 90, 98, 90, 100]],
-            ["Concrete (GS11627)", 5, 18061972, "Switzerland", 85, 1.4, [90, 90, 85, 95, 85, 80, 95]]
+            // Note: We use the 10 legacy projects for the BULK demo, and the 5 simulated projects for the CDOP demo.
+            { id: "legacy-1", name: "Indian Biochar Project", term: 5, value: 2000000, country: "India", informalRisk: 5.6, registryScore: 90, manualScores: [65, 80, 75, 95, 40, 70, 90] },
+            { id: "legacy-2", name: "BECCS (VCS5212)", term: 5, value: 17920128, country: "Denmark", informalRisk: 2.1, registryScore: 80, manualScores: [85, 90, 95, 85, 90, 85, 80] },
+            { id: "legacy-3", name: "AFOLU (VCS1378)", term: 10, value: 15181287, country: "Colombia", informalRisk: 5.3, registryScore: 80, manualScores: [85, 85, 70, 75, 60, 65, 80] },
+            { id: "legacy-4", name: "DAC (VCS5525)", term: 7, value: 7927812, country: "United States", informalRisk: 3.2, registryScore: 80, manualScores: [95, 90, 95, 90, 85, 95, 90] },
+            { id: "legacy-5", name: "HFC (ACR945)", term: 3, value: 1584063, country: "United States", informalRisk: 3.2, registryScore: 75, manualScores: [90, 95, 95, 95, 95, 90, 90] },
         ];
 
-        // Weights for the CARVE Score (sum to 1.0)
-        const WEIGHTS = {
-            registry: 0.05, // Registry (dampened to 5%)
-            informRisk: 0.15, // External (INFORM)
-            // Execution/Methodology (80% combined)
-            financialViability: 0.15,
-            devExperienceMethodology: 0.10,
-            devExperienceCountry: 0.05,
-            methodologyRobustness: 0.15,
-            onTimeIssuance: 0.15,
-            communityLandTenure: 0.10,
-            prePayment: 0.05,
+        // --- Simulated CDOP Database for Hybrid Scoring ---
+        const SIMULATED_CDOP_DATABASE = {
+            "001-AFOLU-US": { name: "US AFOLU Project (VCS)", country: "United States", registryScore: 80, informalRisk: 3.2, description: "Standard US-based reforestation project. Low external risk, moderate issuance history." },
+            "002-ENGINEERED-CH": { name: "Swiss Engineered DAC (Puro)", country: "Switzerland", registryScore: 90, informalRisk: 1.9, description: "High-integrity, Puro-registered DAC project. Extremely low external risk." },
+            "003-AFOLU-CO": { name: "Colombian AFOLU (GS)", country: "Colombia", registryScore: 85, informalRisk: 5.3, description: "Gold Standard AFOLU project. Moderate political and natural hazard risk." },
+            "004-AFOLU-SL": { name: "Sierra Leone AFOLU (VCS)", country: "Sierra Leone", registryScore: 80, informalRisk: 7.8, description: "VCS Reforestation project. Very high INFORM risk and political instability." },
+            "005-BLUECARBON-ID": { name: "Indonesian Blue Carbon (VCS)", country: "Indonesia", registryScore: 80, informalRisk: 6.1, description: "VCS Blue Carbon project. High exposure to natural hazards and regulatory change." },
         };
-
-        // Base Markov Chain Transition Matrix (P: Performing, U: Under-delivering, D: Default)
-        // Values are adjusted based on the calculated CARVE Score.
-        const BASE_MATRIX = {
-            'P': { 'P': 0.90, 'U': 0.08, 'D': 0.02 },
-            'U': { 'P': 0.05, 'U': 0.85, 'D': 0.10 },
-            'D': { 'P': 0.00, 'U': 0.00, 'D': 1.00 }
+        
+        // Markov Chain Transition Matrix Weights (Expert-defined)
+        // P=Performing, U=Under-delivering, D=Default
+        // The scores (1-100) are mapped to a single transition probability.
+        const TRANSITION_WEIGHTS = {
+            // Base Transition P -> U (Higher score = lower risk of transition)
+            P_TO_U: 0.05, 
+            // Base Transition U -> D (Higher score = lower risk of terminal default)
+            U_TO_D: 0.08,
+            // Base Retention P -> P (Higher score = higher retention rate)
+            P_TO_P: 0.95 
         };
-
-        // Global storage for the last analysis data and results
-        window.lastAnalysisData = null;
-        window.lastAnalysisResults = null;
 
         /**
-         * Validates and retrieves all data from the form.
-         * @returns {Object|null} The parsed data object or null if validation fails.
+         * Fills the form with a single sample project's data.
+         * @param {Object} projectData - Data to load.
+         */
+        function loadSampleData(projectData = null) {
+            const defaultId = "legacy-1";
+            let data = projectData || TEST_PROJECTS.find(p => p.id === defaultId);
+            
+            // For the single sample load, we use a legacy project that is NOT in the CDOP DB.
+            document.getElementById('cdop_project_id').value = ''; 
+            document.getElementById('project_name').value = data.name;
+            document.getElementById('offtake_term').value = data.term;
+            document.getElementById('contract_value').value = data.value;
+            document.getElementById('host_country').value = data.country;
+            document.getElementById('registry_score').value = data.registryScore;
+
+            // Manual scores
+            document.getElementById('manual_scores').value = data.manualScores.join(', ');
+        }
+
+        /**
+         * Pulls data from the form and validates inputs. Includes CDOP/Hybrid logic.
+         * @returns {Object|null} The clean form data or null if validation fails.
          */
         function getFormData() {
-            const data = {
-                projectName: document.getElementById('projectName').value.trim(),
-                offtakeTerm: parseInt(document.getElementById('offtakeTerm').value),
-                contractValue: parseFloat(document.getElementById('contractValue').value),
-                hostCountry: document.getElementById('hostCountry').value.trim(),
-                registryScore: parseFloat(document.getElementById('registryScore').value),
-                informRisk: parseFloat(document.getElementById('informRisk').value),
-                manualScoresInput: document.getElementById('manualScores').value.trim(),
-            };
+            const form = document.getElementById('carveForm');
+            const data = {};
             
-            const manualScores = data.manualScoresInput.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
-            const errorDiv = document.getElementById('error-message');
-            errorDiv.classList.add('hidden');
-            errorDiv.innerHTML = '';
-
-            const errors = [];
-
-            if (!data.projectName || !data.hostCountry) { errors.push("Project Name and Host Country are required."); }
-            if (isNaN(data.offtakeTerm) || data.offtakeTerm < 1) { errors.push("Offtake Term must be a positive number."); }
-            if (isNaN(data.contractValue) || data.contractValue < 1000) { errors.push("Total Contract Value must be a positive number."); }
-            if (isNaN(data.registryScore) || data.registryScore < 1 || data.registryScore > 100) { errors.push("Registry Score must be between 1 and 100."); }
-            if (isNaN(data.informRisk) || data.informRisk < 0 || data.informRisk > 10) { errors.push("INFORM Risk Score must be between 0 and 10."); }
+            data.cdopId = form.cdop_project_id.value.trim();
+            data.term = parseInt(form.offtake_term.value);
+            data.value = parseFloat(form.contract_value.value);
+            data.manualScoresStr = form.manual_scores.value.trim();
             
-            if (manualScores.length !== 7) { errors.push(`Manual Scores require exactly 7 comma-separated values. ${manualScores.length} found.`); }
-            else if (manualScores.some(s => s < 1 || s > 100)) { errors.push("All 7 manual scores must be between 1 and 100."); }
+            data.auditLog = {}; // Initialize the audit log
 
+            // --- 1. Data Validation ---
+            let errors = [];
+            
+            // Check essential fields
+            if (!data.term || data.term <= 0 || isNaN(data.term)) errors.push("Offtake Term (Years) must be a positive number.");
+            if (!data.value || data.value <= 0 || isNaN(data.value)) errors.push("Total Contract Value (USD) must be a positive number.");
+            
+            // Check manual scores
+            const scores = data.manualScoresStr.split(',').map(s => parseFloat(s.trim()));
+            if (scores.length !== 7 || scores.some(isNaN) || scores.some(s => s < 1 || s > 100)) {
+                errors.push("Manual Scores must be 7 comma-separated numbers between 1 and 100.");
+            }
+            data.manualScores = scores;
+            
+            // --- 2. CDOP/Hybrid Data Pull ---
+            let automatedData = null;
+            if (data.cdopId && SIMULATED_CDOP_DATABASE[data.cdopId]) {
+                automatedData = SIMULATED_CDOP_DATABASE[data.cdopId];
+                document.getElementById('project_name').value = automatedData.name;
+                document.getElementById('host_country').value = automatedData.country;
+                document.getElementById('registry_score').value = automatedData.registryScore;
+            } else if (data.cdopId) {
+                errors.push(`CDOP Project ID "${data.cdopId}" not found in simulated database.`);
+            }
+            
             if (errors.length > 0) {
-                errorDiv.innerHTML = `<strong>Input Error:</strong><ul>${errors.map(e => `<li>- ${e}</li>`).join('')}</ul>`;
-                errorDiv.classList.remove('hidden');
+                displayError(errors.join('<br>'));
                 return null;
             }
+            
+            // --- 3. Final Scoring Inputs & Audit Trail Population ---
+            
+            // Manual Scores (Tier III - Expert Judgment)
+            data.financialViabilityScore = scores[0];
+            data.legalStructureScore = scores[1];
+            data.communityRiskScore = scores[2];
+            data.methodologyRobustnessScore = scores[3];
+            data.onTimeIssuanceScore = scores[4];
+            data.developerExperienceScore = scores[5];
+            data.prePaymentRiskScore = scores[6];
+            
+            // Automated Scores (Tier I & II - CDOP/INFORM)
+            data.registryScore = parseFloat(document.getElementById('registry_score').value);
+            data.informRisk = automatedData ? automatedData.informRisk : 5.6; // Default if not CDOP
+            data.country = document.getElementById('host_country').value;
+            
+            // Populate Audit Log
+            data.auditLog["Registry Score (Tier II)"] = { value: data.registryScore, source: automatedData ? 'CDOP Simulation' : 'Manual Default' };
+            data.auditLog["External INFORM Risk (Tier I)"] = { value: data.informRisk, source: automatedData ? 'CDOP Simulation' : 'Manual Default' };
+            data.auditLog["Financial Viability Score"] = { value: data.financialViabilityScore, source: 'Expert Analyst Input' };
+            data.auditLog["Legal Structure Score"] = { value: data.legalStructureScore, source: 'Expert Analyst Input' };
+            data.auditLog["Community Risk Score"] = { value: data.communityRiskScore, source: 'Expert Analyst Input' };
+            data.auditLog["Methodology Robustness Score"] = { value: data.methodologyRobustnessScore, source: 'Expert Analyst Input' };
+            data.auditLog["On-Time Issuance History Score"] = { value: data.onTimeIssuanceScore, source: 'Expert Analyst Input' };
+            data.auditLog["Developer Experience Score"] = { value: data.developerExperienceScore, source: 'Expert Analyst Input' };
+            data.auditLog["Pre-Payment Risk Score"] = { value: data.prePaymentRiskScore, source: 'Expert Analyst Input' };
 
-            // Map manual scores to weighted factors
-            const [
-                financialViability,
-                devExperienceMethodology,
-                devExperienceCountry,
-                methodologyRobustness,
-                onTimeIssuance,
-                communityLandTenure,
-                prePayment
-            ] = manualScores;
+            return data;
+        }
+
+        /**
+         * Calculates the CARVE Score and Markov Chain probabilities.
+         * @param {Object} data - Clean form data.
+         * @returns {Object} Analysis results.
+         */
+        function calculateCarveScore(data) {
+            // --- 1. Weighted CARVE Score (1-100) ---
+            
+            // Sub-Tier III: Execution (50% of total CARVE)
+            const executionScores = [
+                data.financialViabilityScore, data.legalStructureScore, data.communityRiskScore, 
+                data.onTimeIssuanceScore, data.developerExperienceScore, data.prePaymentRiskScore
+            ];
+            const executionWeights = [0.15, 0.05, 0.10, 0.25, 0.15, 0.30]; // Sums to 1.0
+            let executionScore = executionScores.reduce((sum, score, i) => sum + (score * executionWeights[i]), 0);
+
+            // Tier III: Methodology (20% of total CARVE)
+            const methodologyScore = data.methodologyRobustnessScore;
+
+            // Tier I: External Risk (15% of total CARVE - Converted from INFORM 1-10 to 1-100)
+            const informToCarve = 100 - (data.informRisk * 10); // 1.0 INFORM = 90 CARVE, 8.0 INFORM = 20 CARVE
+            const externalScore = informToCarve > 0 ? informToCarve : 1; 
+
+            // Tier II: Registry Risk (15% of total CARVE)
+            const registryScore = data.registryScore;
+
+            // Final Blended CARVE Score (Tier III: 70%, Tier I: 15%, Tier II: 15%)
+            const finalCarveScore = (executionScore * 0.50) + (methodologyScore * 0.20) + (externalScore * 0.15) + (registryScore * 0.15);
+            
+            // --- 2. Markov Chain Probability Calculation ---
+            
+            // Map CARVE score (60-100 range is typical) to risk adjustment factor (0.5 to 1.5)
+            // Lower CARVE score = Higher risk multiplier
+            const riskMultiplier = 1.5 - ((finalCarveScore - 60) / 40) * 1.0; 
+            const multiplier = Math.max(0.5, Math.min(1.5, riskMultiplier));
+
+            const term = data.term;
+            
+            // Transition Probability Adjustments
+            let p_to_u = TRANSITION_WEIGHTS.P_TO_U * multiplier;
+            let u_to_d = TRANSITION_WEIGHTS.U_TO_D * multiplier;
+            
+            // Ensure probabilities sum correctly and remain realistic
+            p_to_u = Math.min(p_to_u, 0.5); 
+            u_to_d = Math.min(u_to_d, 0.5); 
+
+            // Calculate Transition Matrix M
+            const p_to_p = 1.0 - p_to_u; // P-to-P = 1 - P-to-U
+            const u_to_u = 1.0 - u_to_d; // U-to-U = 1 - U-to-D
+            
+            const M = [
+                [p_to_p, p_to_u, 0.0],  // P row
+                [0.0, u_to_u, u_to_d],  // U row
+                [0.0, 0.0, 1.0]         // D row (Absorbing State)
+            ];
+
+            // Initial state vector V0 = [1.0, 0.0, 0.0] (Starts in Performing)
+            let V = [1.0, 0.0, 0.0];
+
+            // Calculate Vn = V0 * M^n
+            for (let t = 0; t < term; t++) {
+                let newV = [0, 0, 0];
+                newV[0] = V[0] * M[0][0] + V[1] * M[1][0] + V[2] * M[2][0];
+                newV[1] = V[0] * M[0][1] + V[1] * M[1][1] + V[2] * M[2][1];
+                newV[2] = V[0] * M[0][2] + V[1] * M[1][2] + V[2] * M[2][2];
+                V = newV;
+            }
+
+            const p_collapse = V[2];
+            const p_underperform = V[1];
+            
+            // Value at Risk (VaR) = Total Contract Value * P(Collapse)
+            const varResult = data.value * p_collapse;
 
             return {
-                ...data,
-                scores: {
-                    financialViability,
-                    devExperienceMethodology,
-                    devExperienceCountry,
-                    methodologyRobustness,
-                    onTimeIssuance,
-                    communityLandTenure,
-                    prePayment,
-                    // Calculated scores based on inputs
-                    registry: data.registryScore,
-                    informRisk: 100 - (data.informRisk * 10), // Convert 0-10 INFORM to 0-100 risk score
-                }
+                carveScore: finalCarveScore.toFixed(1),
+                pCollapse: (p_collapse * 100).toFixed(2),
+                pUnderperform: (p_underperform * 100).toFixed(2),
+                varResult: varResult.toFixed(0),
+                pPerforming: (V[0] * 100).toFixed(2),
+                p_to_u: (p_to_u * 100).toFixed(2),
+                u_to_d: (u_to_d * 100).toFixed(2),
+                M: M // Return matrix for reporting
             };
         }
 
         /**
-         * Calculates the weighted CARVE Score.
-         * @param {Object} scores - The individual risk scores (0-100).
-         * @returns {number} The final CARVE Score (0-100, where 100 is best).
+         * Renders the analysis results to the display area.
+         * @param {Object} results - The results object from calculateCarveScore.
+         * @param {Object} data - The input data object.
          */
-        function calculateCarveScore(scores) {
-            let totalWeightedScore = 0;
+        function displayResults(results, data) {
+            document.getElementById('initial-message').classList.add('hidden');
+            document.getElementById('results-display').classList.remove('hidden');
 
-            // Execution/Methodology Scores (Higher is better, 100=no risk)
-            totalWeightedScore += scores.financialViability * WEIGHTS.financialViability;
-            totalWeightedScore += scores.devExperienceMethodology * WEIGHTS.devExperienceMethodology;
-            totalWeightedScore += scores.devExperienceCountry * WEIGHTS.devExperienceCountry;
-            totalWeightedScore += scores.methodologyRobustness * WEIGHTS.methodologyRobustness;
-            totalWeightedScore += scores.onTimeIssuance * WEIGHTS.onTimeIssuance;
-            totalWeightedScore += scores.communityLandTenure * WEIGHTS.communityLandTenure;
-            totalWeightedScore += scores.prePayment * WEIGHTS.prePayment;
+            document.getElementById('final-score').textContent = `${results.carveScore} / 100`;
+            document.getElementById('final-collapse').textContent = `${results.pCollapse}%`;
+            document.getElementById('final-var').textContent = `$${parseInt(results.varResult).toLocaleString()}`;
             
-            // Systemic Scores (Higher is better)
-            totalWeightedScore += scores.registry * WEIGHTS.registry;
-
-            // External Risk (Higher is better)
-            totalWeightedScore += scores.informRisk * WEIGHTS.informRisk;
-            
-            return Math.min(100, Math.max(0, totalWeightedScore));
+            // Store results for report generation
+            window.lastAnalysisData = data;
+            window.lastAnalysisResults = results;
         }
 
         /**
-         * Calculates the Markov Chain transition matrix based on the CARVE Score.
-         * @param {number} carveScore - The calculated CARVE Score (0-100).
-         * @returns {Object} The adjusted transition matrix.
+         * Clears errors.
          */
-        function calculateTransitionMatrix(carveScore) {
-            // Factor is based on the deviation from a neutral score (e.g., 70)
-            const neutralScore = 70;
-            const adjustmentFactor = (carveScore - neutralScore) / 100;
-
-            // Base transition matrix for a neutral score (CARVE Score = 70)
-            const matrix = JSON.parse(JSON.stringify(BASE_MATRIX));
-            
-            // Adjustments: A higher CARVE Score should INCREASE P->P and DECREASE P->U/D and U->D.
-            const P_P_ADJ = adjustmentFactor * 0.15; // Max 15% swing on P->P
-            const P_U_ADJ = -adjustmentFactor * 0.08; // Max 8% swing on P->U
-            const P_D_ADJ = -adjustmentFactor * 0.07; // Max 7% swing on P->D
-            const U_D_ADJ = -adjustmentFactor * 0.05; // Max 5% swing on U->D
-
-            // Apply adjustments to P row
-            matrix.P.P = Math.min(1.0, Math.max(0.70, matrix.P.P + P_P_ADJ));
-            matrix.P.U = Math.min(0.30, Math.max(0, matrix.P.U + P_U_ADJ));
-            matrix.P.D = Math.min(0.30, Math.max(0, matrix.P.D + P_D_ADJ));
-            
-            // Re-normalize P row to ensure P+U+D = 1
-            const pSum = matrix.P.P + matrix.P.U + matrix.P.D;
-            if (pSum !== 1.0) {
-                const diff = 1.0 - pSum;
-                matrix.P.P += diff * 0.5;
-                matrix.P.U += diff * 0.3;
-                matrix.P.D += diff * 0.2;
-            }
-            
-            // Apply adjustments to U row
-            matrix.U.D = Math.min(1.0, Math.max(0, matrix.U.D + U_D_ADJ));
-            matrix.U.P = matrix.U.P - U_D_ADJ * 0.5; // Re-allocate from D to P for better projects
-            matrix.U.U = 1.0 - matrix.U.P - matrix.U.D; // Ensure U+P+D = 1
-            matrix.U.U = Math.max(0, matrix.U.U);
-            
-            // Ensure D row remains stable (absorbing state)
-            matrix.D = { 'P': 0.00, 'U': 0.00, 'D': 1.00 };
-
-            return matrix;
+        function clearError() {
+            const errorElement = document.getElementById('error-message');
+            errorElement.classList.add('hidden');
+            errorElement.innerHTML = '';
         }
 
         /**
-         * Executes the Markov Chain simulation over the given term.
-         * @param {Object} matrix - The transition matrix.
-         * @param {number} term - The number of years.
-         * @returns {Object} The final state probabilities (P, U, D).
+         * Displays validation errors.
+         * @param {string} message - Error message HTML.
          */
-        function runMarkovChain(matrix, term) {
-            let state = { P: 1.0, U: 0.0, D: 0.0 }; // Start 100% in Performing
-            
-            for (let year = 1; year <= term; year++) {
-                const nextState = { P: 0, U: 0, D: 0 };
-                
-                // P -> P, U, D
-                nextState.P += state.P * matrix.P.P;
-                nextState.U += state.P * matrix.P.U;
-                nextState.D += state.P * matrix.P.D;
-
-                // U -> P, U, D
-                nextState.P += state.U * matrix.U.P;
-                nextState.U += state.U * matrix.U.U;
-                nextState.D += state.U * matrix.U.D;
-
-                // D -> P, U, D (D is absorbing, so D->D is 1.0)
-                nextState.D += state.D * matrix.D.D;
-
-                state = nextState;
-            }
-            return state;
+        function displayError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.classList.remove('hidden');
+            errorElement.innerHTML = `<strong>Input Error:</strong><br>${message}`;
         }
 
         /**
-         * Main function to run the CARVE analysis for a single project.
-         * @param {Object} inputData - Data object containing all project inputs.
-         * @returns {Object} Final results including score, probabilities, and VaR.
-         */
-        function runCarveAnalysis(inputData) {
-            const carveScore = calculateCarveScore(inputData.scores);
-            const transitionMatrix = calculateTransitionMatrix(carveScore);
-            const finalState = runMarkovChain(transitionMatrix, inputData.offtakeTerm);
-
-            const probCollapse = finalState.D;
-            const probUnderperformance = finalState.U;
-            const probOfftakeFailure = probCollapse + probUnderperformance; // U + D
-            
-            // VaR is calculated as: Contract Value * Probability of Total Collapse
-            const valueAtRisk = inputData.contractValue * probCollapse;
-
-            return {
-                carveScore: carveScore,
-                probCollapse: probCollapse,
-                probUnderperformance: probUnderperformance,
-                probOfftakeFailure: probOfftakeFailure,
-                valueAtRisk: valueAtRisk,
-                transitionMatrix: transitionMatrix,
-                inputData: inputData
-            };
-        }
-
-        /**
-         * Runs the analysis based on current form data and displays results.
+         * Main function to run a single CARVE analysis.
          */
         function runAnalysis() {
-            const btn = document.getElementById('runAnalysisBtn');
-            const originalText = 'Run Single CARVE-Markov Analysis';
-            btn.disabled = true;
-            btn.innerHTML = `<div class="loader"></div> Calculating...`;
+            clearError();
+            const data = getFormData();
+            if (!data) return;
 
-            try {
-                const inputData = getFormData();
-                if (!inputData) {
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                    return;
-                }
-
-                const results = runCarveAnalysis(inputData);
-                window.lastAnalysisData = inputData;
-                window.lastAnalysisResults = results;
-                
-                displaySingleResults(inputData, results);
-
-            } catch (error) {
-                console.error("Analysis Error:", error);
-                document.getElementById('error-message').innerHTML = `<strong>System Error:</strong> An unexpected error occurred during calculation.`;
-                document.getElementById('error-message').classList.remove('hidden');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-            }
-        }
-
-        /**
-         * Displays the results of a single analysis.
-         */
-        function displaySingleResults(inputData, results) {
-            document.getElementById('results-summary').classList.remove('hidden');
-            document.getElementById('bulk-results-container').classList.add('hidden');
-            document.getElementById('report-output-container').classList.add('hidden');
-
-            document.getElementById('resultProjectName').textContent = inputData.projectName;
-            document.getElementById('resultScore').textContent = results.carveScore.toFixed(1) + '/100';
-            document.getElementById('resultPCollapse').textContent = (results.probCollapse * 100).toFixed(2) + '%';
-            document.getElementById('resultVaR').textContent = '$' + results.valueAtRisk.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            document.getElementById('resultPUnderperf').textContent = (results.probOfftakeFailure * 100).toFixed(2) + '%';
-        }
-
-        /**
-         * Loads a single sample project's data into the form.
-         */
-        function loadSampleData() {
-            const project = TEST_PROJECTS[0]; // Load Indian Biochar Project by default
-            document.getElementById('projectName').value = project[0];
-            document.getElementById('offtakeTerm').value = project[1];
-            document.getElementById('contractValue').value = project[2];
-            document.getElementById('hostCountry').value = project[3];
-            document.getElementById('registryScore').value = project[4];
-            document.getElementById('informRisk').value = project[5];
-            document.getElementById('manualScores').value = project[6].join(', ');
+            const results = calculateCarveScore(data);
+            displayResults(results, data);
             
-            document.getElementById('results-summary').classList.add('hidden');
-            document.getElementById('bulk-results-container').classList.add('hidden');
-            document.getElementById('report-output-container').classList.add('hidden');
-            document.getElementById('error-message').classList.add('hidden');
-            console.log(`Loaded sample project: ${project[0]}`);
+            // Hide report output if a new analysis is run
+            document.getElementById('report-output-section').classList.add('hidden');
         }
 
         /**
-         * Runs the CARVE analysis on all 10 test projects and displays a summary table.
+         * Runs the analysis on all 5 CDOP simulated projects for portfolio view.
          */
         function runBulkAnalysis() {
-            const tableBody = document.getElementById('bulk-results-table');
-            tableBody.innerHTML = '';
-            document.getElementById('results-summary').classList.add('hidden');
-            document.getElementById('report-output-container').classList.add('hidden');
-            document.getElementById('bulk-results-container').classList.remove('hidden');
+            const bulkResultsDiv = document.getElementById('bulk-results');
+            const contractValue = 10000000; // Use a standardized $10M for comparison
 
-            TEST_PROJECTS.forEach(p => {
-                const [projectName, term, value, country, registry, inform, manualScores] = p;
+            let tableHtml = `<table class="min-w-full text-xs text-gray-600"><thead><tr class="text-left text-gray-800 border-b">
+                <th class="p-2 font-bold">Project ID</th>
+                <th class="p-2 font-bold">Country</th>
+                <th class="p-2 font-bold">CARVE Score</th>
+                <th class="p-2 font-bold">P(Collapse)</th>
+                <th class="p-2 font-bold">VaR (USD)</th>
+            </tr></thead><tbody>`;
+            
+            // Use a consistent set of Manual Scores for the demo to isolate CDOP/INFORM risk impact
+            const moderateManualScores = "85, 80, 75, 75, 70, 70, 80"; 
+
+            for (const id in SIMULATED_CDOP_DATABASE) {
+                const automatedData = SIMULATED_CDOP_DATABASE[id];
                 
-                // Reconstruct input data for the engine
-                const inputData = {
-                    projectName,
-                    offtakeTerm: term,
-                    contractValue: value,
-                    hostCountry: country,
-                    scores: {
-                        financialViability: manualScores[0],
-                        devExperienceMethodology: manualScores[1],
-                        devExperienceCountry: manualScores[2],
-                        methodologyRobustness: manualScores[3],
-                        onTimeIssuance: manualScores[4],
-                        communityLandTenure: manualScores[5],
-                        prePayment: manualScores[6],
-                        registry: registry,
-                        informRisk: 100 - (inform * 10),
-                    }
+                // Construct a mock data object for calculation
+                const data = {
+                    cdopId: id,
+                    term: 7, // Standardized 7-year term for portfolio comparison
+                    value: contractValue,
+                    manualScoresStr: moderateManualScores,
+                    manualScores: moderateManualScores.split(',').map(s => parseFloat(s.trim())),
+                    registryScore: automatedData.registryScore,
+                    informRisk: automatedData.informRisk,
+                    country: automatedData.country,
+                    // Tier III Manual Scores (consistent)
+                    financialViabilityScore: 85, legalStructureScore: 80, communityRiskScore: 75, 
+                    methodologyRobustnessScore: 75, onTimeIssuanceScore: 70, developerExperienceScore: 70, 
+                    prePaymentRiskScore: 80,
+                    auditLog: {} // Not needed for bulk table view
                 };
-
-                const results = runCarveAnalysis(inputData);
-
-                const row = tableBody.insertRow();
-                row.className = 'hover:bg-gray-50';
                 
-                const idCell = row.insertCell();
-                idCell.textContent = projectName;
-                idCell.className = 'px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900';
-
-                const scoreCell = row.insertCell();
-                scoreCell.textContent = results.carveScore.toFixed(1);
-                scoreCell.className = 'px-3 py-3 whitespace-nowrap text-sm text-gray-500';
-
-                const collapseCell = row.insertCell();
-                collapseCell.textContent = (results.probCollapse * 100).toFixed(2) + '%';
-                collapseCell.className = `px-3 py-3 whitespace-nowrap text-sm ${results.probCollapse > 0.1 ? 'text-red-600 font-semibold' : 'text-green-600'}`;
-
-                const varCell = row.insertCell();
-                varCell.textContent = '$' + results.valueAtRisk.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                varCell.className = 'px-3 py-3 whitespace-nowrap text-sm text-gray-500';
-            });
+                const results = calculateCarveScore(data);
+                
+                tableHtml += `<tr>
+                    <td class="p-2">${id}</td>
+                    <td class="p-2">${data.country}</td>
+                    <td class="p-2 font-bold">${results.carveScore}</td>
+                    <td class="p-2">${results.pCollapse}%</td>
+                    <td class="p-2">$${parseInt(results.varResult).toLocaleString()}</td>
+                </tr>`;
+            }
+            
+            tableHtml += `</tbody></table>`;
+            bulkResultsDiv.innerHTML = tableHtml;
         }
 
-        // --- LLM API INTEGRATION FOR REPORT GENERATION ---
 
-        // Exponential backoff utility for retries
-        async function fetchWithRetry(url, options, maxRetries = 5) {
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (response.ok) return response;
-                    
-                    if (response.status === 429 && i < maxRetries - 1) {
-                        const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                    } else {
-                        const error = await response.json();
-                        throw new Error(`API failed with status ${response.status}: ${JSON.stringify(error)}`);
-                    }
-                } catch (error) {
-                    if (i === maxRetries - 1) throw error;
-                    // Will retry if fetch failed (network error)
-                }
+        /**
+         * Formats the audit log object into a clean Markdown string for the LLM.
+         * @param {Object} auditLog - The audit log object.
+         * @returns {string} Markdown formatted audit trail.
+         */
+        function formatAuditLog(auditLog) {
+            let markdown = "### Data Sourcing Audit Trail\n";
+            markdown += "The following table details the source for each factor used in the CARVE score calculation:\n\n";
+            markdown += "| CARVE Factor | Source | Value |\n";
+            markdown += "| :--- | :--- | :--- |\n";
+
+            for (const factor in auditLog) {
+                const entry = auditLog[factor];
+                const value = typeof entry.value === 'number' ? entry.value.toFixed(1) : entry.value;
+                markdown += `| ${factor} | ${entry.source} | ${value} |\n`;
             }
+            return markdown;
         }
 
         /**
-         * Generates the final, narrative report using the LLM API.
+         * Calls the Gemini API to generate the full report.
          */
-        async function generateFullReport() {
-            if (!window.lastAnalysisResults) {
-                alert("Please run the CARVE-Markov Analysis first.");
+        async function generateFinalReport() {
+            if (!window.lastAnalysisData || !window.lastAnalysisResults) {
+                document.getElementById('report-output').textContent = "Please run an analysis first.";
                 return;
             }
 
-            const btn = document.getElementById('generateReportBtn');
-            const originalText = 'Generate Full Report (Powered by Gemini)';
-            
-            btn.disabled = true;
-            btn.innerHTML = `<div class="loader"></div> Generating Report...`;
-            document.getElementById('report-output-container').classList.remove('hidden');
-            document.getElementById('report-output').innerHTML = '<p class="text-center text-gray-500 mt-10">...Connecting to Gemini API and drafting final report. This may take a moment...</p>';
-
             const data = window.lastAnalysisData;
             const results = window.lastAnalysisResults;
+            const auditTrailMarkdown = formatAuditLog(data.auditLog);
 
-            // Prepare detailed input data for the LLM
-            const inputDetails = `
-                --- PROJECT DETAILS ---
-                Project Name: ${data.projectName}
-                Offtake Term: ${data.offtakeTerm} Years
-                Contract Value (USD): ${data.contractValue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                Host Country: ${data.hostCountry}
+            const btn = document.getElementById('generateReportButton');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Generating Report...';
+            document.getElementById('report-output-section').classList.remove('hidden');
+            document.getElementById('report-output').textContent = 'Requesting LLM Analysis and Formatting...';
+            
+            const systemPrompt = `You are the Chief Climate Scientist for Climate Risk Analysis. Your goal is to convert numerical CARVE-Markov risk modeling results into a professional, auditable financial risk report suitable for a corporate CFO audience.
+            
+            STRICT OUTPUT INSTRUCTIONS:
+            1. Report MUST be titled "CARVE Portfolio Risk Assessment: ${data.project_name}".
+            2. Use Markdown format exclusively.
+            3. The report must contain these sections in this exact order: "1. Executive Summary", "2. Project Profile and Hybrid Score", "3. Markov Chain Financial Forecast", "4. Key Risk Drivers", "5. Terms and Conditions", and the final "Annex: Data Sourcing and Audit Trail".
+            4. The tone must be authoritative, objective, and financially focused.
+            5. Incorporate the Audit Trail provided in the user prompt into the final "Annex" section.`;
+            
+            // --- User Query: The full dataset for the LLM ---
+            const userQuery = `Generate a financial risk report for the project "${data.project_name}" based on the following data points for a ${data.term}-year offtake:
+            
+            --- PROJECT DATA ---
+            - Host Country: ${data.country}
+            - Total Contract Value: $${data.value.toLocaleString()}
+            - Offtake Term: ${data.term} years
+            - Final CARVE Score: ${results.carveScore}/100
 
-                --- CARVE INPUT SCORES (1-100, Higher is better) ---
-                Registry Quality: ${data.scores.registry.toFixed(0)}
-                External/INFORM Risk: ${data.scores.informRisk.toFixed(0)} (Derived from raw score of ${data.informRisk})
-                Financial Viability: ${data.scores.financialViability.toFixed(0)}
-                Developer Experience (Methodology): ${data.scores.devExperienceMethodology.toFixed(0)}
-                Developer Experience (Country): ${data.scores.devExperienceCountry.toFixed(0)}
-                Methodology Robustness: ${data.scores.methodologyRobustness.toFixed(0)}
-                On-Time Issuance History: ${data.scores.onTimeIssuance.toFixed(0)}
-                Community/Land Tenure Risk: ${data.scores.communityLandTenure.toFixed(0)}
-                Pre-Payment Status: ${data.scores.prePayment.toFixed(0)}
+            --- NUMERICAL RESULTS ---
+            - Cumulative Value at Risk (VaR): $${results.varResult.toLocaleString()}
+            - Probability of Total Project Collapse (Default): ${results.pCollapse}%
+            - Probability of Offtake Underperformance (U): ${results.pUnderperform}%
+            - Transition P→U (Performing to Under-delivering): ${results.p_to_u}%
+            - Transition U→D (Under-delivering to Default): ${results.u_to_d}%
 
-                --- MARKOV CHAIN OUTPUT RESULTS ---
-                Final CARVE Score: ${results.carveScore.toFixed(1)}/100
-                Probability of Total Collapse (P(D)): ${(results.probCollapse * 100).toFixed(2)}%
-                Cumulative Value at Risk (VaR): $${results.valueAtRisk.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                Probability of Offtake Underperformance (P(U) + P(D)): ${(results.probOfftakeFailure * 100).toFixed(2)}%
-                Final P(P): ${(results.transitionMatrix.P.P * 100).toFixed(2)}%
-                Final P(U): ${(results.transitionMatrix.P.U * 100).toFixed(2)}%
-                Final P(D): ${(results.transitionMatrix.P.D * 100).toFixed(2)}%
-            `;
+            --- AUDIT TRAIL DATA ---
+            Use this data for the final Annex, providing transparency on automated vs. manual inputs:
+            ${auditTrailMarkdown}`;
 
-            const systemPrompt = `You are the Chief Climate Scientist and Risk Analyst for the CARVE (Carbon Risk Valuation Engine).
-                Your task is to transform the provided raw numerical inputs and Markov Chain results into a professional, narrative Risk Assessment Report.
-                The report MUST be delivered entirely in a single Markdown block. Do not use any external formatting (like bolding outside of markdown).
-                
-                The report MUST follow this exact structure, using the project name and data provided:
-                
-                # CARVE Portfolio Risk Assessment: [Project Name]
-                
-                ---
-                
-                ## 1. Executive Summary & Key Findings
-                * Start with a 'Bottom Line Up Front' (BLUF) statement summarizing the overall risk profile (e.g., 'Low Risk,' 'Moderate Risk,' 'High Risk').
-                * State the calculated Final CARVE Score (out of 100) and the two key financial metrics: Probability of Total Collapse and Cumulative Value at Risk (VaR).
-                
-                ## 2. Methodology & Quantitative Metrics
-                * Briefly explain that the CARVE Engine quantifies risk across Financial, Technical/Execution, and External factors and uses a probabilistic Markov Chain model to forecast failure over the contract term.
-                * Present the three core metrics clearly in a bulleted list.
-                
-                ## 3. Key Risk Drivers (Qualitative Analysis)
-                * Analyze the input scores to identify the 3 strongest risk drivers (highest scores) and the 3 weakest risk drivers (lowest scores).
-                * For each driver, provide a brief, professional interpretation (e.g., "High score in Methodology Robustness indicates strong permanence.").
-                
-                ## 4. Confidence and Comparative Assessment
-                * Provide a standard **85% Confidence Score** in the model's accuracy, stating that the model's primary value is in comparing projects across a portfolio.
-                * Include the standard statement: "This project is currently expected to perform within the upper-middle quartile of similar projects globally, provided the core risk drivers identified remain stable."
-                
-                ## 5. Standard Terms and Conditions
-                * The report MUST end with the full text of the following legal disclaimer, preceded by a horizontal rule:
-                ---
-                **Standard Terms and Conditions**
-                This CARVE Portfolio Risk Assessment is provided for informational and internal comparative purposes only. It is the result of a proprietary Markov Chain forecasting model and does not constitute investment advice, legal counsel, or a guarantee of future project performance. The model relies on internal scoring inputs which are estimations based on publicly available data, proprietary research, and professional judgment. Climate Risk Analysis makes no representations or warranties, express or implied, regarding the accuracy, completeness, or reliability of the information contained herein. The recipient assumes sole responsibility for all decisions and outcomes based on the use of this report. Climate Risk Analysis shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or interpretation of this assessment.
-            `;
 
-            const userQuery = `Generate the full risk assessment report using the following raw data. Ensure all numerical results are smoothly integrated into the narrative and that the final output is a single, complete Markdown block. \n\n${inputDetails}`;
-
-            const apiKey = ""; 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
+            // --- API Call Logic with Exponential Backoff ---
             const payload = {
                 contents: [{ parts: [{ text: userQuery }] }],
                 systemInstruction: { parts: [{ text: systemPrompt }] },
             };
 
+            const apiKey = "";
+            const apiUrl = LLM_API_URL + apiKey;
+
+            // Exponential Backoff Implementation
+            let response;
+            const maxRetries = 3;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.status === 429) {
+                        const delay = Math.pow(2, i) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue; 
+                    }
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    break;
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error; 
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+
             try {
-                const response = await fetchWithRetry(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
                 const result = await response.json();
                 const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Error: Could not generate report content.";
                 
-                document.getElementById('report-output').innerHTML = text;
-                console.log(`Report generation successful for ${data.projectName}.`);
-
-                // NOTE: In the live canvas environment, this triggers a file to be generated.
-                
+                document.getElementById('report-output').textContent = text;
             } catch (error) {
                 console.error("API Call failed:", error);
-                document.getElementById('report-output').innerHTML = `<p class="text-red-500">Failed to generate report due to API error. Check the console for details: ${error.message}</p>`;
+                document.getElementById('report-output').textContent = `Failed to generate report due to API error. Check the console for details: ${error.message}`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
             }
         }
 
-        // Initialize Global Objects
-        window.lastAnalysisData = null;
-        window.lastAnalysisResults = null;
+        // --- 3. EVENT LISTENERS AND INITIAL SETUP ---
 
         /**
-         * Runs the CARVE analysis on all 10 test projects and displays a summary table.
-         * The results are displayed in the UI, but the analysis is run in the console.
+         * Initializes event listeners and sets up the initial state.
          */
-        function runInitialSetup() {
-            // Check for runAnalysis in the URL hash, this simulates the initial action
-            if (window.location.hash === '#run') {
-                loadSampleData();
+        function initialSetup() {
+            // Store results globally for report generation
+            window.lastAnalysisData = null;
+            window.lastAnalysisResults = null;
+
+            document.getElementById('carveForm').addEventListener('submit', function(e) {
+                e.preventDefault();
                 runAnalysis();
-                runBulkAnalysis();
-            } else {
-                loadSampleData();
-                runBulkAnalysis(); // Run bulk analysis on load to show portfolio context
-            }
+            });
+
+            document.getElementById('loadSampleButton').addEventListener('click', function() {
+                loadSampleData(TEST_PROJECTS[0]);
+                runAnalysis(); 
+            });
+            
+            document.getElementById('generateReportButton').addEventListener('click', generateFinalReport);
+            document.getElementById('runBulkButton').addEventListener('click', runBulkAnalysis);
+            
+            // Help Modal Handlers
+            document.getElementById('helpButton').addEventListener('click', () => {
+                document.getElementById('helpModal').classList.remove('hidden');
+                document.getElementById('helpModal').classList.add('flex');
+            });
+
+            document.getElementById('closeHelpButton').addEventListener('click', () => {
+                document.getElementById('helpModal').classList.remove('flex');
+                document.getElementById('helpModal').classList.add('hidden');
+            });
+
+            // Initial load of a sample project and bulk demo on page load
+            loadSampleData(SIMULATED_CDOP_DATABASE["001-AFOLU-US"]);
+            runBulkAnalysis();
         }
 
-        window.onload = runInitialSetup;
+        // Run the setup when the page loads
+        window.onload = initialSetup;
 
 
     </script>
