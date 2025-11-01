@@ -182,18 +182,32 @@
 
 
     <script type="module">
-        // --------------------------------------------------------------------------------
-        // IMPORTANT: SECURE API KEY SETUP (Must use a Cloudflare Worker)
-        // --------------------------------------------------------------------------------
-        // Step 1: Replace this placeholder with your actual Cloudflare Worker URL
-        // Example: const WORKER_URL = "https://carve-gem-proxy.shawngagne.workers.dev/";
-        const WORKER_URL = "carve-gem-proxy.shawngagne.workers.dev"; // <<< MUST BE UPDATED
+       // --------------------------------------------------------------------------------
+// IMPORTANT: SECURE API KEY SETUP (Must use a Cloudflare Worker)
+// --------------------------------------------------------------------------------
 
-        // --------------------------------------------------------------------------------
-        // GLOBAL DATA AND SIMULATIONS
-        // --------------------------------------------------------------------------------
+// **Step 1: DEFINE THE VARIABLE HERE.** (This is the critical fix for the ReferenceError)
+const WORKER_URL = "https://carve-gem-proxy.shawngagne.workers.dev/"; 
+// Replace "https://carve-gem-proxy.shawngagne.workers.dev/" with your actual Cloudflare Worker URL!
 
-        // Simulated CDOP Database (Automated Data Sources)
+// --- Final Security Check (Must check for the placeholder to prevent accidental sharing) ---
+if (WORKER_URL.includes("YOUR_WORKER_URL_HERE")) {
+    window.onload = () => { // We use onload to prevent crashing the initial script
+        document.getElementById('report-output').innerHTML = `
+            <div class="p-6 text-center text-red-700 bg-red-100 rounded-lg">
+                <h3 class="text-xl font-bold">SECURITY ERROR: Worker URL Missing</h3>
+                <p class="mt-2">Please replace the "YOUR_WORKER_URL_HERE" placeholder in the JavaScript code with your Cloudflare Worker URL.</p>
+            </div>
+        `;
+    };
+    // Throw error to stop the script from running Markov chain logic
+    throw new Error("Worker URL placeholder detected. Script halted for security.");
+}
+
+
+// --------------------------------------------------------------------------------
+// GLOBAL DATA AND SIMULATIONS
+// --------------------------------------------------------------------------------
         const SIMULATED_CDOP_DATABASE = {
             '001-AFOLU-US': { projectName: 'AFOLU Project US', registryScore: 80, hostCountry: 'United States', countryInformRisk: 3.2, registry: 'VCS' },
             '002-ENGINEERED-CH': { projectName: 'Engineered Tech CH', registryScore: 95, hostCountry: 'Switzerland', countryInformRisk: 2.1, registry: 'Puro' },
