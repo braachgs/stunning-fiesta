@@ -182,17 +182,18 @@
 
 
     <script type="module">
-       // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------------
 // IMPORTANT: SECURE API KEY SETUP (Must use a Cloudflare Worker)
 // --------------------------------------------------------------------------------
 
-// **Step 1: DEFINE THE VARIABLE HERE.** (This is the critical fix for the ReferenceError)
+// Step 1: DEFINE THE VARIABLE HERE. (This is the critical fix)
 const WORKER_URL = "https://carve-gem-proxy.shawngagne.workers.dev/"; 
-// Replace "https://carve-gem-proxy.shawngagne.workers.dev/" with your actual Cloudflare Worker URL!
+// REPLACE the placeholder URL above with your actual Cloudflare Worker URL!
 
-// --- Final Security Check (Must check for the placeholder to prevent accidental sharing) ---
+// --- Final Security Check ---
+// If the placeholder is still present, stop the process and alert the user.
 if (WORKER_URL.includes("YOUR_WORKER_URL_HERE")) {
-    window.onload = () => { // We use onload to prevent crashing the initial script
+    window.onload = () => { 
         document.getElementById('report-output').innerHTML = `
             <div class="p-6 text-center text-red-700 bg-red-100 rounded-lg">
                 <h3 class="text-xl font-bold">SECURITY ERROR: Worker URL Missing</h3>
